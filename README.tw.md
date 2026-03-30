@@ -63,13 +63,6 @@ bun run typecheck # tsc --noEmit
 - **轉換失敗**（模式為 none）：Cursor 版本可能已變更 `main.js` 結構，請對照實際檔案調整 `src/csp.ts` 內正則。
 - **Windows 權限錯誤**：需具備寫入 Cursor 安裝目錄的權限（請自行評估風險）。
 
-## CI（GitHub Actions）
-
-[`.github/workflows/package.yml`](./.github/workflows/package.yml) 與 **mcp-cursor-message** 相同概念：
-
-- **推送到 `main`**（非 bot）：自動 **patch** 版號、打 `v*` 標籤、建 **VSIX**、建立／更新 **GitHub Release** 並附上檔案。
-- **`v*` 標籤**、**發布 Release**、**PR**、**手動執行**：會建置 VSIX，並依事件上傳至 Release 或 Actions **artifact**（名稱 `vsix`）。
-
 ## 授權
 
 [**AGPL-3.0**](./LICENSE)
