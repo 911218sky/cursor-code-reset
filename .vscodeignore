@@ -1,0 +1,8 @@
+src/**
+esbuild.config.mjs
+tsconfig*.json
+**/*.map
+.cursor/**
+index.ts
+bun.lock
+.gitignore

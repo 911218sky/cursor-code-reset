@@ -1,0 +1,119 @@
+{
+	"name": "cursor-code-reset",
+	"displayName": "cursor-code-reset",
+	"description": "Back up and refresh CSP marker UUIDs in Cursor main.js (status bar, bottom panel, and utility commands).",
+	"version": "1.5.0",
+	"publisher": "local",
+	"author": "911218sky",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/911218sky/cursor-code-reset.git"
+	},
+	"license": "AGPL-3.0",
+	"packageManager": "bun@1.2.17",
+	"engines": {
+		"vscode": "^1.85.0"
+	},
+	"categories": ["Other"],
+	"activationEvents": ["onStartupFinished"],
+	"main": "./dist/extension.js",
+	"contributes": {
+		"viewsContainers": {
+			"panel": [
+				{
+					"id": "cursorCodeReset",
+					"title": "cursor-code-reset",
+					"icon": "media/icon.svg"
+				}
+			]
+		},
+		"views": {
+			"cursorCodeReset": [
+				{
+					"type": "webview",
+					"id": "cursorCodeReset.panel",
+					"name": "Reset"
+				}
+			]
+		},
+		"configuration": {
+			"title": "cursor-code-reset",
+			"properties": {
+				"cursorCodeReset.storagePath": {
+					"type": "string",
+					"default": "",
+					"markdownDescription": "Custom directory for this extension’s **cache file** (`cursor-code-reset-cache.json`). Leave empty to use VS Code global storage for this extension."
+				},
+				"cursorCodeReset.cacheStoragePath": {
+					"type": "string",
+					"default": "",
+					"description": "Deprecated: use cursorCodeReset.storagePath. If set, takes effect when storagePath is empty.",
+					"deprecationMessage": "Use cursorCodeReset.storagePath instead."
+				},
+				"cursorCodeReset.autoHideTemplateErrors": {
+					"type": "boolean",
+					"default": false,
+					"markdownDescription": "About 1 second after startup, turn off **Problems** decorations and the status-bar “current problem” display to reduce noise from transient diagnostics after `main.js` changes. Off by default so editor behavior is not changed silently."
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "cursorCodeReset.openPanel",
+				"title": "cursor-code-reset: Start reset workflow"
+			},
+			{
+				"command": "cursorCodeReset.apply",
+				"title": "cursor-code-reset: Apply main.js changes"
+			},
+			{
+				"command": "cursorCodeReset.replaceMainJs",
+				"title": "cursor-code-reset: Replace main.js (same as apply)"
+			},
+			{
+				"command": "cursorCodeReset.reloadWindow",
+				"title": "cursor-code-reset: Reload window"
+			},
+			{
+				"command": "cursorCodeReset.focusPanel",
+				"title": "cursor-code-reset: Open bottom panel"
+			},
+			{
+				"command": "cursorCodeReset.testPathSearch",
+				"title": "cursor-code-reset: Test path search"
+			},
+			{
+				"command": "cursorCodeReset.clearCache",
+				"title": "cursor-code-reset: Clear local cache"
+			},
+			{
+				"command": "cursorCodeReset.testInput",
+				"title": "cursor-code-reset: Test input box"
+			},
+			{
+				"command": "cursorCodeReset.simpleMenu",
+				"title": "cursor-code-reset: Simple reset menu"
+			},
+			{
+				"command": "cursorCodeReset.hideTemplateErrors",
+				"title": "cursor-code-reset: Hide Problems decorations"
+			},
+			{
+				"command": "cursorCodeReset.showTemplateErrors",
+				"title": "cursor-code-reset: Show Problems decorations"
+			}
+		]
+	},
+	"scripts": {
+		"compile": "node esbuild.config.mjs",
+		"typecheck": "bunx tsc -p .",
+		"package": "bun run compile && bunx @vscode/vsce package --no-dependencies --allow-missing-repository"
+	},
+	"devDependencies": {
+		"@types/node": "^20.14.0",
+		"@types/vscode": "^1.85.0",
+		"@vscode/vsce": "^3.2.0",
+		"esbuild": "^0.27.4",
+		"typescript": "^5.6.0"
+	}
+}
