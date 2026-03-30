@@ -2,7 +2,7 @@
 	"name": "cursor-code-reset",
 	"displayName": "cursor-code-reset",
 	"description": "Back up and refresh CSP marker UUIDs in Cursor main.js (status bar, bottom panel, and utility commands).",
-	"version": "1.5.0",
+	"version": "1.5.1",
 	"publisher": "local",
 	"author": "911218sky",
 	"repository": {
@@ -14,8 +14,12 @@
 	"engines": {
 		"vscode": "^1.85.0"
 	},
-	"categories": ["Other"],
-	"activationEvents": ["onStartupFinished"],
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onStartupFinished"
+	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"viewsContainers": {
