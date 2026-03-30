@@ -64,6 +64,13 @@ All commands are prefixed **`cursor-code-reset:`** — e.g. **Start reset workfl
 - **Transform fails** (“none” mode): your Cursor build may have changed `main.js`; inspect `src/csp.ts` regexes and adjust for your version.
 - **Permission errors** on Windows: run the editor with rights that can write under the Cursor install directory, or adjust ownership (still at your own risk).
 
+## CI (GitHub Actions)
+
+[`.github/workflows/package.yml`](./.github/workflows/package.yml) matches the **mcp-cursor-message** pattern:
+
+- **Push to `main`** (by a human): bump **patch** in `package.json`, tag `v*`, build **VSIX**, create/update a **GitHub Release** with the artifact.
+- **Tag push `v*`** / **Release published** / **PR** / **workflow_dispatch**: build and either attach to the release or upload a **workflow artifact** named `vsix`.
+
 ## License
 
 [**AGPL-3.0**](./LICENSE)

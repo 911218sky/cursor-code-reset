@@ -3,6 +3,7 @@ esbuild.config.mjs
 tsconfig*.json
 **/*.map
 .cursor/**
+.github/**
 index.ts
 bun.lock
 .gitignore
