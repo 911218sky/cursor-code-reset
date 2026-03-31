@@ -22,24 +22,6 @@
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
-		"viewsContainers": {
-			"panel": [
-				{
-					"id": "cursorCodeReset",
-					"title": "cursor-code-reset",
-					"icon": "media/icon.svg"
-				}
-			]
-		},
-		"views": {
-			"cursorCodeReset": [
-				{
-					"type": "webview",
-					"id": "cursorCodeReset.panel",
-					"name": "Reset"
-				}
-			]
-		},
 		"configuration": {
 			"title": "cursor-code-reset",
 			"properties": {
@@ -77,10 +59,6 @@
 			{
 				"command": "cursorCodeReset.reloadWindow",
 				"title": "cursor-code-reset: Reload window"
-			},
-			{
-				"command": "cursorCodeReset.focusPanel",
-				"title": "cursor-code-reset: Open bottom panel"
 			},
 			{
 				"command": "cursorCodeReset.testPathSearch",

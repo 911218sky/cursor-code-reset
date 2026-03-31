@@ -1,13 +1,12 @@
 /**
- * VS Code／Cursor 擴充：右下角狀態列 + 底部面板 Webview（HTML 見 media/reset-panel.html）。
+ * VS Code／Cursor 擴充：右下角狀態列（狀態列按鈕觸發 reset 流程）。
  */
 import * as vscode from "vscode";
 import * as path from "node:path";
 import { readFile, stat } from "node:fs/promises";
-import { findExistingMainJsSync, getPossibleCursorMainJsPaths } from "./paths";
+import { findExistingMainJsSync } from "./paths";
 import { extractCspUuidValues } from "./csp";
 import { resetCursorMainJs } from "./reset";
-import { loadResetPanelHtml } from "./loadPanelHtml";
 import { loadPluginCache, savePluginCache } from "./cache";
 import {
 	runTestPathSearch,
@@ -22,14 +21,12 @@ const CMD_OPEN = "cursorCodeReset.openPanel";
 const CMD_RESET = "cursorCodeReset.apply";
 const CMD_REPLACE_MAIN = "cursorCodeReset.replaceMainJs";
 const CMD_RELOAD = "cursorCodeReset.reloadWindow";
-const CMD_FOCUS_PANEL = "cursorCodeReset.focusPanel";
 const CMD_TEST_PATHS = "cursorCodeReset.testPathSearch";
 const CMD_CLEAR_CACHE = "cursorCodeReset.clearCache";
 const CMD_TEST_INPUT = "cursorCodeReset.testInput";
 const CMD_SIMPLE_MENU = "cursorCodeReset.simpleMenu";
 const CMD_HIDE_PROBLEMS = "cursorCodeReset.hideTemplateErrors";
 const CMD_SHOW_PROBLEMS = "cursorCodeReset.showTemplateErrors";
-const VIEW_ID = "cursorCodeReset.panel";
 
 /**
  * 解析要操作的 main.js：先掃候選路徑，否則詢問是否用快取路徑，最後開啟檔案選擇器。
@@ -132,54 +129,6 @@ export async function runResetFlow(context: vscode.ExtensionContext): Promise<vo
 	}
 }
 
-/** 底部面板 Webview：載入 HTML、處理 reset／reload／paths 訊息。 */
-class ResetPanelWebviewViewProvider implements vscode.WebviewViewProvider {
-	/** @param _extensionRoot 擴充根目錄（供讀取 media）。 @param _context 供 `runResetFlow` 等使用。 */
-	constructor(
-		private readonly _extensionRoot: string,
-		private readonly _context: vscode.ExtensionContext,
-	) {}
-
-	/** 建立 Webview 內容並註冊 `onDidReceiveMessage`  handler。 */
-	resolveWebviewView(
-		webviewView: vscode.WebviewView,
-		_context: vscode.WebviewViewResolveContext,
-		_token: vscode.CancellationToken,
-	): void {
-		webviewView.webview.options = { enableScripts: true };
-		void loadResetPanelHtml(this._extensionRoot)
-			.then((html) => {
-				webviewView.webview.html = html;
-			})
-			.catch((err: unknown) => {
-				const msg = err instanceof Error ? err.message : String(err);
-				webviewView.webview.html = `<body style="padding:12px;font-family:var(--vscode-font-family)">Could not load panel: <code>${msg}</code></body>`;
-			});
-
-		const ctx = this._context;
-		webviewView.webview.onDidReceiveMessage(async (msg: { type: string }) => {
-			if (msg.type === "reset") await runResetFlow(ctx);
-			if (msg.type === "reload") {
-				const ok = await vscode.window.showWarningMessage("Reload the window?", { modal: true }, "OK", "Cancel");
-				if (ok === "OK") await vscode.commands.executeCommand("workbench.action.reloadWindow");
-			}
-			if (msg.type === "paths") {
-				webviewView.webview.postMessage({ type: "pathList", paths: getPossibleCursorMainJsPaths() });
-			}
-		});
-	}
-}
-
-/** 聚焦底部面板並嘗試切到本擴充的 view container。 */
-async function focusBottomPanel(): Promise<void> {
-	await vscode.commands.executeCommand("workbench.action.focusPanel");
-	try {
-		await vscode.commands.executeCommand("workbench.view.extension.cursorCodeReset");
-	} catch {
-		/* 部分版本指令 id 不同 */
-	}
-}
-
 /** 註冊狀態列、Webview、指令與可選的啟動後隱藏 Problems 行為。 */
 export function activate(context: vscode.ExtensionContext): void {
 	const out = vscode.window.createOutputChannel("cursor-code-reset");
@@ -198,11 +147,9 @@ export function activate(context: vscode.ExtensionContext): void {
 	status.show();
 
 	const run = () => runResetFlow(context);
-	const provider = new ResetPanelWebviewViewProvider(context.extensionPath, context);
 	context.subscriptions.push(
 		status,
 		out,
-		vscode.window.registerWebviewViewProvider(VIEW_ID, provider),
 		vscode.commands.registerCommand(CMD_OPEN, run),
 		vscode.commands.registerCommand(CMD_RESET, run),
 		vscode.commands.registerCommand(CMD_REPLACE_MAIN, run),
@@ -210,7 +157,6 @@ export function activate(context: vscode.ExtensionContext): void {
 			const ok = await vscode.window.showWarningMessage("Reload the window?", { modal: true }, "OK", "Cancel");
 			if (ok === "OK") await vscode.commands.executeCommand("workbench.action.reloadWindow");
 		}),
-		vscode.commands.registerCommand(CMD_FOCUS_PANEL, () => focusBottomPanel()),
 		vscode.commands.registerCommand(CMD_TEST_PATHS, () => runTestPathSearch(out)),
 		vscode.commands.registerCommand(CMD_CLEAR_CACHE, () => runClearCache(context)),
 		vscode.commands.registerCommand(CMD_TEST_INPUT, () => runTestInput()),

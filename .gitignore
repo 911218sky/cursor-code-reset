@@ -34,3 +34,16 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# IDE config
+.cursor/
+.vscode/
+.idea/
+.project/
+.settings/
+.classpath/
+.factorypath/
+.project/
+.settings/
+.classpath/
+.factorypath/
